@@ -2,6 +2,12 @@
 import sys
 from PySide2.QtWidgets import QApplication
 from PySide2.QtQml import QQmlApplicationEngine
+from PySide2.QtCore import qDebug
+from audio.__main__ import test
+
+def runOther():
+    qDebug("This is a test")
+    test()
 
 
 if __name__ == "__main__":
@@ -10,5 +16,7 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()
     engine.load('ApplicationWindow.qml')
     engine.quit.connect(app.quit)
+
+    runOther()
 
     sys.exit(app.exec_())

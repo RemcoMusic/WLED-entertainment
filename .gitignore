@@ -1,0 +1,7 @@
+#Qt IDE user file
+*.user
+
+#Qt build files
+/audio/__pycache__/*
+
+

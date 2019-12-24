@@ -1,8 +1,5 @@
 # This Python file uses the following encoding: utf-8
-from discovery.discovery import wledDetection
+from discovery.wled import  startDiscovery
 
 def discovery():
-    wledDetection()
-
-if __name__ == "__main__":
-     print("Discovery start")
+    startDiscovery()

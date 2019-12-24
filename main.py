@@ -7,13 +7,10 @@ from PySide2.QtCore import qDebug
 from audio.__main__ import test
 from discovery.__main__ import discovery
 
-
-
 def runOther():
     qDebug("Program started")
     #test()
     discovery()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

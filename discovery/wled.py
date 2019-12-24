@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 from zeroconf import ServiceBrowser, Zeroconf
 import socket
 import time
@@ -24,24 +23,26 @@ class MyListener:
          device = Device(name, socket.inet_ntoa(info.address))
          globals()['newDeviceList'].append(device)
 
-def sendAPIcall(device, call):
-    apiCommand = "http://" + device.ip + call
-    response = requests.get(apiCommand)
-    return response
-
 def jsonCall(device):
+    output = {}
     jsonCommand = "http://" + device.ip + "/json"
-    data = urllib.request.urlopen(jsonCommand).read()
-    output = json.loads(data)
+    try:
+        data = urllib.request.urlopen(jsonCommand).read()
+        output = json.loads(data)
+    except:
+        print("request failed")
+        output["status"] = "Failed"
     return output
 
 def scanMdns():
+    print("scan started")
     #scan for all mdns devices on the local network and add them to newDeviceList
     newDeviceList.clear()
     zeroconf = Zeroconf()
     listener = MyListener()
     ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
     time.sleep(5)
+    print("Scan completed")
     zeroconf.close()
 
 def isNewDevice(info):
@@ -58,12 +59,16 @@ def isNewDevice(info):
         return True
 
 def testIfWled():
-    #loop trough newDeviceList and test if they are Wled devices or not
     for x in range(len(newDeviceList)):
-        if (sendAPIcall(newDeviceList[x],"/win").status_code == 200):
+        info = jsonCall(newDeviceList[x])
+        try:
+            wled = info["info"]["brand"]
+        except:
+            print("Not a WledDevice or connection lost")
+            continue
+        if(wled == "WLED"):
             print("Wled device found at: %s" % (newDeviceList[x].ip))
             #get info about the current Wled
-            info = jsonCall(newDeviceList[x])
             if(isNewDevice(info)):
                 print("new device added")
                 wledDevice = WledDevice(newDeviceList[x].ip, info)
@@ -71,13 +76,9 @@ def testIfWled():
             else:
                 print("device already exists")
 
-def wledDetection():
+def startDiscovery():
     scanMdns()
-    print("Total devices found: %s" % (len(newDeviceList)))
-    testIfWled()
+    if(len(newDeviceList) > 0):
+        print("Total devices found: %s" % (len(newDeviceList)))
+        testIfWled()
     print("Total Wled devices found: %s" % (len(wledList)))
-#    for x in range(len(wledList)):
-#       print(wledList[x].info["info"]["mac"])
-
-if __name__ == "__main__":
-    print("Dit is de discoveryMain file")

@@ -3,6 +3,6 @@
 
 #Qt build files
 /audio/__pycache__/*
-discovery\__pycache__/*
+/discovery/__pycache__/*
 
 

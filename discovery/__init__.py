@@ -1,1 +1,2 @@
 #"""discovery"""
+print("testing init")

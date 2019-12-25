@@ -9,15 +9,15 @@ from discovery.__main__ import discovery
 
 def runOther():
     qDebug("Program started")
-    #test()
+    test()
     discovery()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    #engine = QQmlApplicationEngine()
-    #engine.load('ApplicationWindow.qml')
-    #engine.quit.connect(app.quit)
+    engine = QQmlApplicationEngine()
+    engine.load('ApplicationWindow.qml')
+    engine.quit.connect(app.quit)
 
     runOther()
 

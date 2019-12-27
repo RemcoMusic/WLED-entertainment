@@ -8,6 +8,7 @@ import threading
 import logging
 
 from audio.__main__ import MainAudio
+from discovery.__main__ import discovery
 
 class Main(QObject):
 
@@ -19,6 +20,9 @@ class Main(QObject):
         audio = MainAudio()
         assert audio
 
+    def startDevicesDiscovery(self):
+        discovery()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
@@ -26,6 +30,8 @@ if __name__ == "__main__":
     logging.basicConfig(format=format, level=logging.INFO,datefmt="%H:%M:%S")
 
     dataToUI = Main()
+
+    dataToUI.startDevicesDiscovery()
 
     audioThread = threading.Thread(target=dataToUI.startAudioVisualiser)
     audioThread.start()

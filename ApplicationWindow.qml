@@ -74,79 +74,10 @@ ApplicationWindow {
                 radius: 10
             }
         }
-
-        ChartView {
-            id: line
-            width: 300
-            height: 300
-            Layout.fillWidth: true
-            transformOrigin: Item.Center
-            animationOptions: ChartView.AllAnimations
-            theme: ChartView.ChartThemeDark
-            property bool openGL: true
-            property bool openGLSupported: true
-            Layout.column: 2
-            Layout.row: 3
-
-            onOpenGLChanged: {
-                if (openGLSupported) {
-                    series("Raw Audio Data").useOpenGL = openGL;
-                }
-            }
-
-            ValueAxis {
-                id: axisY
-                min:  0
-                max:  255
-            }
-
-            ValueAxis {
-                id: axisX
-                min: 0
-                max: 8190
-            }
-
-            LineSeries {
-                id: foo
-                name: "Raw Audio Data"
-                axisY: axisY
-                axisX: axisX
-                useOpenGL: line.openGL
-            }
-            Timer {
-                id: refreshTimer
-                interval: 1 / 60 * 1000 // 60 Hz
-                running: true
-                repeat: true
-                onTriggered: {
-                    dataToUI.getAudioReady();
-                }
-            }
-        }
     }
 
     Connections {
         target: dataToUI
 
-        onTestSignal: {
-            foo.append(dataToUI.setYPoint(),dataToUI.setXPoint())
-            refreshTimer.stop()
-//            console.log(dataToUI.getOldXPoint())
-//            console.log(dataToUI.setXPoint())
-//            foo.replace(dataToUI.getOldXPoint(),dataToUI.getOldYPoint(),
-//                        dataToUI.setXPoint(), dataToUI.setYPoint())
-
-        }
-
-        onStartSignal: {
-            foo.clear()
-            refreshTimer.start()
-        }
     }
 }
-
-/*##^##
-Designer {
-    D{i:1;anchors_height:720;anchors_width:960;anchors_x:0;anchors_y:0}
-}
-##^##*/

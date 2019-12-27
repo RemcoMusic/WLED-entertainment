@@ -2,18 +2,11 @@
 from audio.audioInput import AudioInput
 from PySide2.QtCore import qDebug
 
-class Test():
+class MainAudio():
 
     def __init__(self):
         self.audioInput = AudioInput()
-
-    def audioChunk(self):
-        audioArray = self.audioInput.getAudioStream()
-        return audioArray
-
-    def xAxis(self):
-        xArray = self.audioInput.getXaxis()
-        return xArray
+        self.audioInput.drawGraph()
 
 if __name__ == "__main__":
-     print("Unit Test Boy!")
+     qDebug("Unit Test Boy!")

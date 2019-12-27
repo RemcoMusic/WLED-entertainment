@@ -4,15 +4,18 @@ import pyaudio
 import numpy as np
 import struct
 import matplotlib.pyplot as plt
+from scipy.fftpack import fft
 
 class AudioInput():
 
     def __init__(self):
         self.p = pyaudio.PyAudio()
-        self.CHUNK = 1024 * 4
+        self.CHUNK = 1024 * 2
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 2
         self.RATE = 44100
+        self.dataInt = 0
+        self.stream = self.p.open(format=self.FORMAT,channels=self.CHANNELS,input_device_index=2, rate=self.RATE,input=True, frames_per_buffer=self.CHUNK)
 
     def getAudioDeviceList(self):                                           #TODO needs to return a dictonary so it can be chosen from the UI
         for i in range(self.p.get_device_count()):
@@ -20,30 +23,45 @@ class AudioInput():
             qDebug(" ")
 
     def getAudioStream(self):
-        stream=self.p.open(format=self.FORMAT,channels=self.CHANNELS,input_device_index=2, rate=self.RATE,input=True, frames_per_buffer=self.CHUNK)
-        data = stream.read(self.CHUNK)
+        data = self.stream.read(self.CHUNK)
         data_int = struct.unpack(str(4 * self.CHUNK) + 'B', data)
+        self.dataInt = data_int
         data_np = np.array(data_int, dtype=np.int16)[::4]
         return data_np
 
-    def getXaxis(self):
+    def drawGraph(self):
+        fig, (ax1, ax2) = plt.subplots(2, figsize=(15, 7))
+
+        # Deze moet gebruikt worden!
         x = np.arange(0, 2 * self.CHUNK, 2)
-        return x
+        # frequencies (spectrum)
+        xf = np.linspace(0, self.RATE, self.CHUNK)
 
-    def testAudioFile(self):
-        qDebug("Dit is de audio file")
+        # Wordt tijdelijk gevuld met random data
+        line, = ax1.plot(x, np.random.rand(self.CHUNK), '-',lw=2)
+        line_fft, = ax2.semilogx(xf, np.random.rand(self.CHUNK), '-', lw=2)
 
-#    fig, ax = plt.subplots(1, figsize=(15, 7))
-#    x = np.arange(0, 2 * CHUNK, 2) Deze moet gebruikt worden!
-#    line, = ax.plot(x, np.random.rand(CHUNK), '-',lw=2)
-#    ax.set_title('AUDIO WAVEFORM')
-#    ax.set_xlabel('samples')
-#    ax.set_ylabel('volume')
-#    ax.set_ylim(-400, 400)
-#    ax.set_xlim(0, 2 * CHUNK)
-#    plt.show(block=False)
-#    line.set_ydata(data_np)
-#    fig.canvas.draw()
-#    fig.canvas.flush_events()
+        ax1.set_title('AUDIO WAVEFORM')
+        ax1.set_xlabel('samples')
+        ax1.set_ylabel('volume')
+        ax1.set_ylim(0, 255)
+        ax1.set_xlim(0, 2 * self.CHUNK)
+        plt.setp(ax1, xticks=[0, self.CHUNK, 2 * self.CHUNK], yticks=[0, 128, 255])
+
+        ax2.set_xlim(20, self.RATE / 2)
+
+        plt.show(block=False)
+
+        while True:
+            data = self.getAudioStream()
+            line.set_ydata(data)
+
+            yf = fft(self.dataInt)
+            line_fft.set_ydata(np.abs(yf[0:self.CHUNK])  / (128 * self.CHUNK))
+
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+
+
 if __name__ == "__main__":
      qDebug("Unit Test Boy!" )

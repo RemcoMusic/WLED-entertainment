@@ -9,7 +9,7 @@ import threading
 import logging
 
 from audio.__main__ import MainAudio
-from discovery.__main__ import discovery
+from discovery.__main__ import MainDiscovery
 
 class Main(QObject):
 
@@ -24,7 +24,7 @@ class Main(QObject):
 
     @Slot()
     def startDevicesDiscovery(self):
-        devicesThread = threading.Thread(target=discovery)
+        devicesThread = threading.Thread(target=MainDiscovery)
         devicesThread.start()
 
     @Slot()
